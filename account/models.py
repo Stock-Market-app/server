@@ -21,3 +21,7 @@ class User(AbstractUser):
 def generate_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist_of_user")
+    stock = models.CharField(max_length=500)
