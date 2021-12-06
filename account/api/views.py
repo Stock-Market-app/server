@@ -73,16 +73,17 @@ def watchlist(request):
                     stock=symbol
                 )
                 return JsonResponse({"message": "Added"})
+        else:
+            return JsonResponse({"message": "Login is required to attempt this action."})
     elif request.method == 'GET':
-        stocks = Watchlist.objects.filter(user=request.user)
-        wlStocksData = {}
-        for stock in stocks:
-            url = f"http://localhost:3000/nse/get_quote_info?companyName={stock.stock}"
-            print(url)
-            req = requests.get(url)
-            getdata = req.json()
-            wlStocksData[stock.stock] = getdata
-        return JsonResponse(wlStocksData)
+        if request.user.is_authenticated:
+            stocks = Watchlist.objects.filter(user=request.user)
+            wlStocksData = []
+            for stock in stocks:
+                wlStocksData.append(stock.stock)
+            return JsonResponse(wlStocksData, safe=False)
+        else:
+            return JsonResponse({"message": "Login is required to attempt this action."})
 
 
 def logout_view(request):
