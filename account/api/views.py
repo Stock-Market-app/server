@@ -14,8 +14,11 @@ from .serializers import *
 def index(request):
     if request.user.is_authenticated:
         print("user authenticated!")
+        print(request.user.username)
+        return JsonResponse({"message": "user authenticated", "user": request.user.username})
     else:
         print("user not authenticated!")
+        return JsonResponse({"message": "user not auth"})
 
 @api_view(['POST',])
 def register_view(request):
@@ -47,7 +50,6 @@ def login_view(request):
         authUser = authenticate(request, username=data["username"], password=data["password"])
         if authUser is not None:
             login(request, authUser)
-            index(request)
             return JsonResponse({
                 "message": "Login Successful",
                 "user": user.serializer(),
@@ -88,5 +90,4 @@ def watchlist(request):
 
 def logout_view(request):
     logout(request)
-    index(request)
     return JsonResponse({"message": "logout successfull"})
